@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
+
+
     public Camera myCamera;
     public Transform alvo;
     public float velocidade;

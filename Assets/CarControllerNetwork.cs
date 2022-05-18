@@ -21,6 +21,11 @@ public class CarControllerNetwork : NetworkBehaviour
 
     public WheelCollider[] Rodas;
 
+    public Transform origemTiro1;
+    public Transform origemTiro2;
+
+    public GameObject tiroPrefab;
+
     public Renderer myRender;
 
 
@@ -46,6 +51,10 @@ public class CarControllerNetwork : NetworkBehaviour
         if (isLocalPlayer) { 
             Acelerar();
             Virar();
+            if (Input.GetButtonDown("Fire1")) 
+            {
+                SpawnTiro();
+            }
         }
         //Debug.Log(myBody.velocity.magnitude * 3.6);
     }
@@ -69,6 +78,12 @@ public class CarControllerNetwork : NetworkBehaviour
         /*if (myRender == null)
             myRender = GetComponent<Renderer>();*/
         myRender.material.color = newColor;
+    }
+
+    [Command]
+    void SpawnTiro() {
+        GameObject coxinha = Instantiate(tiroPrefab, origemTiro1.position, tiroPrefab.transform.rotation);
+        NetworkServer.Spawn(coxinha);
     }
 
     void OnDestroy()
