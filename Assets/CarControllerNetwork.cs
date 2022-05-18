@@ -82,7 +82,7 @@ public class CarControllerNetwork : NetworkBehaviour
 
     [Command]
     void SpawnTiro() {
-        GameObject coxinha = Instantiate(tiroPrefab, origemTiro1.position, tiroPrefab.transform.rotation);
+        GameObject coxinha = Instantiate(tiroPrefab, origemTiro1.position, origemTiro1.rotation);
         NetworkServer.Spawn(coxinha);
     }
 

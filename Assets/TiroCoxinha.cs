@@ -12,7 +12,7 @@ public class TiroCoxinha : NetworkBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        rb.velocity = Vector3.forward * velocidade;
+        rb.velocity = rb.transform.forward * velocidade;
     }
 
     // Update is called once per frame
