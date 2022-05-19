@@ -6,6 +6,8 @@ using Cinemachine;
 
 public class CarControllerNetwork : NetworkBehaviour
 {
+    [SyncVar]
+    public int Health;
 
     [SyncVar(hook = "ColorMe")] public Color32 color;
 
@@ -53,7 +55,7 @@ public class CarControllerNetwork : NetworkBehaviour
             Virar();
             if (Input.GetButtonDown("Fire1")) 
             {
-                SpawnTiro();
+                CmdSpawnTiro();
             }
         }
         //Debug.Log(myBody.velocity.magnitude * 3.6);
@@ -81,9 +83,23 @@ public class CarControllerNetwork : NetworkBehaviour
     }
 
     [Command]
-    void SpawnTiro() {
+    void CmdSpawnTiro() {
         GameObject coxinha = Instantiate(tiroPrefab, origemTiro1.position, origemTiro1.rotation);
         NetworkServer.Spawn(coxinha);
+    }
+
+    [ClientRpc]
+    void RpcMudarVida(int dano) {
+        Health -= dano;
+    }
+
+    public void DarDano(int dano) {
+        RpcMudarVida(dano);
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        
     }
 
     void OnDestroy()

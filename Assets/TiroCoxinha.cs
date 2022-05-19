@@ -23,8 +23,13 @@ public class TiroCoxinha : NetworkBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+        if (collision.gameObject.tag == "Carro") 
+        {
+            CarControllerNetwork carControllerNetwork = collision.gameObject.GetComponent<CarControllerNetwork>();
+            carControllerNetwork.DarDano(1);
+        }
         NetworkServer.Destroy(gameObject);
-        Destroy(gameObject);
+        //Destroy(gameObject);
     }
 
 }
