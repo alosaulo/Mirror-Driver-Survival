@@ -1,13 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using Mirror;
 using Cinemachine;
 
 public class CarControllerNetwork : NetworkBehaviour
 {
-    [SyncVar]
+
+    int maxHealth;
+
+    [SyncVar(hook = "MudarCopo")]
     public int Health;
+
+    public Image HPImg;
 
     [SyncVar(hook = "ColorMe")] public Color32 color;
 
@@ -22,6 +28,14 @@ public class CarControllerNetwork : NetworkBehaviour
     Rigidbody myBody;
 
     public WheelCollider[] Rodas;
+
+    public float cooldownTiro;
+
+    float contaTiro;
+
+    //0 tiro no lado esquerdo
+    //1 tiro no lado direito
+    byte lado = 0;
 
     public Transform origemTiro1;
     public Transform origemTiro2;
@@ -40,6 +54,7 @@ public class CarControllerNetwork : NetworkBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        maxHealth = Health;
         myBody = GetComponent<Rigidbody>();
         myBody.centerOfMass = centroDeGravidade;
         if (isLocalPlayer) {
@@ -53,9 +68,14 @@ public class CarControllerNetwork : NetworkBehaviour
         if (isLocalPlayer) { 
             Acelerar();
             Virar();
-            if (Input.GetButtonDown("Fire1")) 
+            if (Input.GetButton("Fire1") && contaTiro >= cooldownTiro) 
             {
                 CmdSpawnTiro();
+                contaTiro = 0;
+            }
+            if(contaTiro < cooldownTiro) 
+            { 
+                contaTiro += Time.deltaTime;
             }
         }
         //Debug.Log(myBody.velocity.magnitude * 3.6);
@@ -82,9 +102,29 @@ public class CarControllerNetwork : NetworkBehaviour
         myRender.material.color = newColor;
     }
 
+    private void MudarCopo(int oldHealth, int newHealth)
+    {
+        RpcMudarImage();
+    }
+
+    [ClientRpc]
+    private void RpcMudarImage() {
+        HPImg.fillAmount = (float)Health / (float)maxHealth;
+    }
+
     [Command]
     void CmdSpawnTiro() {
-        GameObject coxinha = Instantiate(tiroPrefab, origemTiro1.position, origemTiro1.rotation);
+        GameObject coxinha;
+        if (lado == 0)
+        {
+            coxinha = Instantiate(tiroPrefab, origemTiro1.position, origemTiro1.rotation);
+            lado = 1;
+        }
+        else 
+        {
+            coxinha = Instantiate(tiroPrefab, origemTiro2.position, origemTiro2.rotation);
+            lado = 0;
+        }
         NetworkServer.Spawn(coxinha);
     }
 
