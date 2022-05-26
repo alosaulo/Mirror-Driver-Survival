@@ -16,7 +16,7 @@ public class TiroCoxinha : NetworkBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        rb.velocity = rb.transform.forward * velocidade;
+        rb.AddForce(rb.transform.forward * velocidade);
         StartCoroutine("ContadorDestruidor");
     }
 
@@ -31,6 +31,7 @@ public class TiroCoxinha : NetworkBehaviour
         }
     }
 
+    [ServerCallback]
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.tag == "Carro") 
